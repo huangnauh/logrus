@@ -51,8 +51,8 @@ func AddHook(hook Hook) {
 	std.AddHook(hook)
 }
 
-// DisableEntryBuffer set whether the standard logger will disable entry buffer
-func DisableEntryBuffer(disable bool) {
+// SetEntryBufferDisable sets whether the standard logger will disable entry buffer
+func SetEntryBufferDisable(disable bool) {
 	std.DisableEntryBuffer = disable
 }
 

@@ -404,3 +404,10 @@ func (logger *Logger) ReplaceHooks(hooks LevelHooks) LevelHooks {
 	logger.mu.Unlock()
 	return oldHooks
 }
+
+// SetEntryBufferDisable sets whether the logger will disable entry buffer
+func (logger *Logger) SetEntryBufferDisable(disable bool) {
+	logger.mu.Lock()
+	logger.DisableEntryBuffer = disable
+	logger.mu.Unlock()
+}
