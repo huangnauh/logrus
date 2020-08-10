@@ -51,6 +51,11 @@ func AddHook(hook Hook) {
 	std.AddHook(hook)
 }
 
+// DisableEntryBuffer set whether the standard logger will disable entry buffer
+func DisableEntryBuffer(disable bool) {
+	std.DisableEntryBuffer = disable
+}
+
 // WithError creates an entry from the standard logger and adds an error to it, using the value defined in ErrorKey as key.
 func WithError(err error) *Entry {
 	return std.WithField(ErrorKey, err)

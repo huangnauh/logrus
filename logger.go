@@ -12,7 +12,7 @@ import (
 // LogFunction For big messages, it can be more efficient to pass a function
 // and only call it if the log level is actually enables rather than
 // generating the log message and then checking if the level is enabled
-type LogFunction func()[]interface{}
+type LogFunction func() []interface{}
 
 type Logger struct {
 	// The logs are `io.Copy`'d to this in a mutex. It's common to set this to a
@@ -44,6 +44,8 @@ type Logger struct {
 	entryPool sync.Pool
 	// Function to exit the application, defaults to `os.Exit()`
 	ExitFunc exitFunc
+	// Disable Entry Buffer, a custom buffer may be set to entry
+	DisableEntryBuffer bool
 }
 
 type exitFunc func(int)

@@ -62,6 +62,8 @@ type Entry struct {
 
 	// When formatter is called in entry.log(), a Buffer may be set to entry
 	Buffer *bytes.Buffer
+	// Disable Buffer, a custom buffer may be set to entry
+	DisableBuffer bool
 
 	// Contains the context set by the user. Useful for hook processing etc.
 	Context context.Context
@@ -74,7 +76,8 @@ func NewEntry(logger *Logger) *Entry {
 	return &Entry{
 		Logger: logger,
 		// Default is three fields, plus one optional.  Give a little extra room.
-		Data: make(Fields, 6),
+		Data:          make(Fields, 6),
+		DisableBuffer: logger.DisableEntryBuffer,
 	}
 }
 
@@ -215,8 +218,6 @@ func (entry Entry) HasCaller() (has bool) {
 // This function is not declared with a pointer value because otherwise
 // race conditions will occur when using multiple goroutines
 func (entry Entry) log(level Level, msg string) {
-	var buffer *bytes.Buffer
-
 	// Default to now, but allow users to override if they want.
 	//
 	// We don't have to worry about polluting future calls to Entry#log()
@@ -236,17 +237,22 @@ func (entry Entry) log(level Level, msg string) {
 
 	entry.fireHooks()
 
-	buffer = getBuffer()
-	defer func() {
-		entry.Buffer = nil
-		putBuffer(buffer)
-	}()
-	buffer.Reset()
-	entry.Buffer = buffer
+	if entry.DisableBuffer {
+		var buffer *bytes.Buffer
+		buffer = getBuffer()
+		defer func() {
+			entry.Buffer = nil
+			putBuffer(buffer)
+		}()
+		buffer.Reset()
+		entry.Buffer = buffer
+	}
 
 	entry.write()
 
-	entry.Buffer = nil
+	if entry.DisableBuffer {
+		entry.Buffer = nil
+	}
 
 	// To avoid Entry#log() returning a value that only would make sense for
 	// panic() to use in Entry#Panic(), we avoid the allocation by checking
