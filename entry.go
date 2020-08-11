@@ -237,7 +237,7 @@ func (entry Entry) log(level Level, msg string) {
 
 	entry.fireHooks()
 
-	if entry.DisableBuffer {
+	if !entry.DisableBuffer {
 		buffer := getBuffer()
 		defer func() {
 			entry.Buffer = nil
@@ -249,7 +249,7 @@ func (entry Entry) log(level Level, msg string) {
 
 	entry.write()
 
-	if entry.DisableBuffer {
+	if !entry.DisableBuffer {
 		entry.Buffer = nil
 	}
 
